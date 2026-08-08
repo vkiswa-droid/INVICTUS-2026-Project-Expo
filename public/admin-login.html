@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin Login | INVICTUS 2026</title><link rel="stylesheet" href="/style.css">
+<style>
+.login{min-height:calc(100vh - 107px);display:grid;place-items:center;padding:40px 20px}
+.loginbox{width:min(440px,100%);background:#0d101d;border:1px solid #292f49;border-radius:16px;padding:38px;box-shadow:0 25px 90px #0009}
+.loginbox h1{font-family:"Space Grotesk";font-size:34px;margin:10px 0}.loginbox p{color:#9ca3bb;line-height:1.6}.loginbox label{display:block;color:#b8bdd0;font-size:12px;margin:18px 0}.loginbox input{margin-top:8px}.loginbox .cta{width:100%;justify-content:center;margin-top:10px}.brandline{display:flex;align-items:center;gap:12px}.brandline img{width:55px;height:55px;border-radius:50%;object-fit:cover}.err{color:#ffadb9;background:#241018;border:1px solid #713747;border-radius:7px;padding:12px;margin-bottom:12px}
+</style></head>
+<body>
+<div class="top">DMI COLLEGE OF ENGINEERING PRESENTS <span>✦</span> PROJECT EXPO 2026</div>
+<header><nav><a class="brand" href="/"><img src="/assets/dmi-logo.jpeg"><div>DMI COLLEGE<br><b>OF ENGINEERING</b></div></a></nav></header>
+<main class="login"><form class="loginbox" method="post" action="/admin/login">
+<div class="brandline"><img src="/assets/dmi-logo.jpeg"><div><div class="eyebrow">INVICTUS 2026</div><strong>ADMIN PORTAL</strong></div></div>
+<h1>Welcome back.</h1><p>Sign in to manage Project Expo registrations.</p>
+<label>Username<input name="username" required autocomplete="username" placeholder="Admin username"></label>
+<label>Password<input type="password" name="password" required autocomplete="current-password" placeholder="Admin password"></label>
+<button class="cta" type="submit">SIGN IN <strong>›</strong></button>
+</form></main>
+</body></html>

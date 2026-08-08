@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Registration Confirmed | INVICTUS 2026</title>
+<link rel="stylesheet" href="/style.css">
+<style>
+.confirm{min-height:calc(100vh - 107px);display:grid;place-items:center;padding:50px 20px}
+.box{width:min(720px,100%);background:#0d101d;border:1px solid #292f49;border-radius:18px;padding:45px;text-align:center;box-shadow:0 25px 100px #0009}
+.check{width:76px;height:76px;margin:0 auto 22px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#7447ff,#c33dff);font-size:38px;box-shadow:0 0 45px #7447ff66}
+.box h1{font-family:"Space Grotesk";font-size:42px;margin:10px 0}
+.box p{color:#aab0c3;line-height:1.7}
+.id{display:inline-block;margin:22px 0;padding:15px 25px;border:1px solid #6545cf;background:#11152a;border-radius:8px;color:#bd91ff;font-family:"Space Grotesk";font-size:24px;letter-spacing:1px}
+.details{margin:20px 0;text-align:left;background:#090c16;border:1px solid #232941;border-radius:10px;padding:20px;line-height:1.9;color:#c7cbda}
+.details b{color:#fff}
+</style>
+</head>
+<body>
+<div class="top">DMI COLLEGE OF ENGINEERING PRESENTS <span>✦</span> PROJECT EXPO 2026</div>
+<header><nav><a class="brand" href="/"><img src="/assets/dmi-logo.jpeg"><div>DMI COLLEGE<br><b>OF ENGINEERING</b></div></a><div class="links"><a href="/">HOME</a><a href="/#about">ABOUT</a><a href="/#event">EVENT</a><a href="/#register" class="register-nav">REGISTER NOW</a></div></nav></header>
+<main class="confirm"><div class="box" id="box"><div class="check">✓</div><div class="eyebrow">INVICTUS 2026 • PROJECT EXPO</div><h1>Registration Confirmed</h1><p>Your project registration has been successfully received.</p><div class="id" id="rid">Loading…</div><div class="details" id="details">Loading registration details…</div><a class="cta" href="/">BACK TO HOME <strong>›</strong></a></div></main>
+<script>
+const id=new URLSearchParams(location.search).get("id");
+const rid=document.getElementById("rid"), details=document.getElementById("details");
+if(!id){rid.textContent="No registration ID";details.textContent="Please return to the registration page."; }
+else fetch("/api/registration/"+encodeURIComponent(id)).then(r=>r.json()).then(x=>{
+ if(x.error) throw Error(x.error);
+ rid.textContent=x.registrationId;
+ details.innerHTML="<b>Team:</b> "+x.team+"<br><b>Project:</b> "+x.project+"<br><b>Team Leader:</b> "+x.leader+"<br><b>College:</b> "+x.college+"<br><b>Category:</b> "+x.category+"<br><b>Members:</b> "+x.members;
+}).catch(e=>{rid.textContent="Not found";details.textContent=e.message});
+</script>
+</body>
+</html>

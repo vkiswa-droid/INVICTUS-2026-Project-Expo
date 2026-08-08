@@ -1,0 +1,32 @@
+const express=require("express");
+const session=require("express-session");
+const fs=require("fs"),path=require("path");
+const app=express(),PORT=process.env.PORT||3000;
+const dataDir=path.join(__dirname,"data"),file=path.join(dataDir,"registrations.json");
+if(!fs.existsSync(dataDir))fs.mkdirSync(dataDir,{recursive:true});
+if(!fs.existsSync(file))fs.writeFileSync(file,"[]");
+const read=()=>JSON.parse(fs.readFileSync(file,"utf8"));
+const write=x=>fs.writeFileSync(file,JSON.stringify(x,null,2));
+const rid=()=>`INV-26-${Date.now().toString().slice(-8)}-${Math.floor(100+Math.random()*900)}`;
+const admin=(req,res,next)=>req.session.admin?next():res.status(401).json({error:"Admin login required"});
+app.use(express.urlencoded({extended:true}));
+app.use(express.json({limit:"1mb"}));
+app.use(express.static(path.join(__dirname,"public")));
+app.use(session({secret:process.env.SESSION_SECRET||"change-this-in-production",resave:false,saveUninitialized:false,cookie:{httpOnly:true,sameSite:"lax"}}));
+
+app.post("/api/register",(req,res)=>{
+ const required=["team","leader","college","department","year","phone","email","members","memberNames","project","category","abstract"];
+ if(required.some(k=>!String(req.body[k]||"").trim())) return res.status(400).json({error:"Please complete all required fields."});
+ let id; const rows=read(); do{id=rid()}while(rows.some(x=>x.registrationId===id));
+ const item={registrationId:id,...Object.fromEntries(required.map(k=>[k,String(req.body[k]).trim()])),createdAt:new Date().toISOString()};
+ rows.push(item);write(rows);res.json({registrationId:id});
+});
+app.get("/api/registration/:id",(req,res)=>{const x=read().find(r=>r.registrationId===req.params.id);x?res.json(x):res.status(404).json({error:"Registration not found"})});
+app.get("/admin/login",(req,res)=>res.sendFile(path.join(__dirname,"public/admin-login.html")));
+app.post("/admin/login",(req,res)=>{if(req.body.username===(process.env.ADMIN_USERNAME||"gojo")&&req.body.password===(process.env.ADMIN_PASSWORD||"jigokuraku@2008")){req.session.admin=true;return res.redirect("/admin")}res.status(401).send("<h2>Invalid login</h2><a href='/admin/login'>Try again</a>")});
+app.get("/admin/logout",(req,res)=>req.session.destroy(()=>res.redirect("/admin/login")));
+app.get("/admin",(req,res)=>req.session.admin?res.sendFile(path.join(__dirname,"public/admin.html")):res.redirect("/admin/login"));
+app.get("/api/admin/registrations",admin,(req,res)=>res.json(read().sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt))));
+app.delete("/api/admin/registrations/:id",admin,(req,res)=>{const a=read(),b=a.filter(x=>x.registrationId!==req.params.id);write(b);res.json({ok:true})});
+app.get("/api/admin/export",admin,(req,res)=>{const a=read(),c=["registrationId","team","leader","college","department","year","phone","email","members","project","category","abstract","createdAt"],q=v=>`"${String(v??"").replaceAll('"','""')}"`;const csv=[c.join(","),...a.map(x=>c.map(k=>q(x[k])).join(","))].join("\r\n");res.setHeader("Content-Type","text/csv;charset=utf-8");res.setHeader("Content-Disposition","attachment; filename=invictus-2026-registrations.csv");res.send("\ufeff"+csv)});
+app.listen(PORT,()=>console.log(`INVICTUS 2026 running at http://localhost:${PORT}`));
